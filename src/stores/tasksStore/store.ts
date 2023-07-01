@@ -1,12 +1,19 @@
 import { makeAutoObservable } from 'mobx'
+import { clearPersistedStore, makePersistable } from 'mobx-persist-store'
 import { type Task } from './types/Task'
 import initialTasks from './initialTasks'
 
-class Tasks {
+class TasksStore {
   public items: Task[] = initialTasks
+  public shownTask = initialTasks[0]
 
   public constructor () {
     makeAutoObservable(this)
+    void makePersistable(this, {
+      name: 'tasks',
+      properties: ['items', 'shownTask'],
+      storage: window.localStorage
+    })
   }
 
   // Обновляет поле найденной задачи и ее подзадач
@@ -19,14 +26,14 @@ class Tasks {
         if (task.id === taskId) {
           task[field] = value
 
-          const recursiveUpdate = (tasks: Task[]): Task[] => {
-            return tasks.map((task) => {
-              recursiveUpdate(task.subtasks)
-              return { ...task, [field]: value }
+          const recursiveUpdate = (subtasks: Task[]): void => {
+            subtasks.forEach((subtask, index) => {
+              subtasks[index] = { ...subtask, [field]: value }
+              recursiveUpdate(subtask.subtasks)
             })
           }
 
-          task.subtasks = recursiveUpdate(task.subtasks)
+          recursiveUpdate(task.subtasks)
           return false
         }
 
@@ -36,6 +43,14 @@ class Tasks {
     }
 
     recursiveSearch(this.items)
+  }
+
+  public async clearMemory (): Promise<void> {
+    await clearPersistedStore(this)
+  }
+
+  public showTask (task: Task): void {
+    this.shownTask = task
   }
 
   public createTask (newTask: Task, parentId?: string): void {
@@ -90,21 +105,13 @@ class Tasks {
     this.items = recursiveRemove(this.items)
   }
 
-  public selectTask (taskId: string): void {
-    this.recursiveSetTaskField(taskId, 'selected', true)
+  public setTaskSelected (taskId: string, selected: boolean): void {
+    this.recursiveSetTaskField(taskId, 'selected', selected)
   }
 
-  public unselectTask (taskId: string): void {
-    this.recursiveSetTaskField(taskId, 'selected', false)
-  }
-
-  public collapseTask (taskId: string): void {
-    this.recursiveSetTaskField(taskId, 'collapsed', true)
-  }
-
-  public expandTask (taskId: string): void {
-    this.recursiveSetTaskField(taskId, 'collapsed', false)
+  public setTaskCollapsed (taskId: string, collapsed: boolean): void {
+    this.recursiveSetTaskField(taskId, 'collapsed', collapsed)
   }
 }
 
-export default new Tasks()
+export default new TasksStore()

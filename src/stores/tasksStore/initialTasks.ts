@@ -7,7 +7,7 @@ const initialTasks: Task[] = [
     title: 'Задача 1',
     description: 'Описание 1',
     selected: true,
-    collapsed: true,
+    collapsed: false,
     subtasks: []
   },
   {
@@ -15,7 +15,7 @@ const initialTasks: Task[] = [
     title: 'Задача 2',
     description: 'Описание 2',
     selected: false,
-    collapsed: true,
+    collapsed: false,
     subtasks: []
   },
   {
@@ -23,14 +23,14 @@ const initialTasks: Task[] = [
     title: 'Задача 3',
     description: 'Описание 3',
     selected: false,
-    collapsed: true,
+    collapsed: false,
     subtasks: [
       {
         id: nanoid(),
         title: 'Задача 3.1',
         description: 'Описание 3.1',
         selected: false,
-        collapsed: true,
+        collapsed: false,
         subtasks: []
       },
       {
@@ -38,30 +38,30 @@ const initialTasks: Task[] = [
         title: 'Задача 3.2',
         description: 'Описание 3.2',
         selected: false,
-        collapsed: true,
+        collapsed: false,
         subtasks: []
       },
       {
         id: nanoid(),
         title: 'Задача 3.3',
         description: 'Описание 3.3',
-        selected: false,
-        collapsed: true,
+        selected: true,
+        collapsed: false,
         subtasks: [
           {
             id: nanoid(),
             title: 'Задача 3.3.1',
             description: 'Описание 3.3.1',
-            selected: false,
-            collapsed: true,
+            selected: true,
+            collapsed: false,
             subtasks: []
           },
           {
             id: nanoid(),
             title: 'Задача 3.3.2',
             description: 'Описание 3.3.2',
-            selected: false,
-            collapsed: true,
+            selected: true,
+            collapsed: false,
             subtasks: []
           }
         ]
@@ -73,7 +73,7 @@ const initialTasks: Task[] = [
     title: 'Задача 4',
     description: 'Описание 4',
     selected: false,
-    collapsed: true,
+    collapsed: false,
     subtasks: []
   },
   {
@@ -81,7 +81,7 @@ const initialTasks: Task[] = [
     title: 'Задача 5',
     description: 'Описание 5',
     selected: false,
-    collapsed: true,
+    collapsed: false,
     subtasks: []
   }
 ]

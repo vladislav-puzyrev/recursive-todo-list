@@ -1,0 +1,13 @@
+.body {
+  display: flex;
+  gap: 20px;
+
+  .left, .right {
+    padding: 20px;
+  }
+
+  .right {
+    flex-grow: 1;
+    background: lightgray;
+  }
+}

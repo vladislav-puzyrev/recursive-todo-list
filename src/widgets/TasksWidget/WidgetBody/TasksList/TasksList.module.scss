@@ -1,0 +1,61 @@
+.container {
+  min-width: 200px;
+
+  .list {
+    margin: 0;
+    list-style: none;
+
+    &:first-child {
+      padding: 0;
+    }
+  }
+}
+
+.listItem {
+  .listItemInfo {
+    display: flex;
+    gap: 5px;
+
+    .checkbox {
+      cursor: pointer;
+    }
+
+    .collapseButton, .selectButton {
+      padding: 5px;
+      cursor: pointer;
+      background: inherit;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .collapseButton {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      padding: 5px 10px;
+
+      &:hover {
+        background: lightskyblue;
+      }
+    }
+
+    .counter {
+      font-size: 12px;
+    }
+
+    .selectButton {
+      width: 100%;
+      padding-right: 20px;
+      text-align: left;
+
+      &:hover {
+        background: lightblue;
+      }
+    }
+
+    .selectButtonActive {
+      background: lightsteelblue;
+      border-radius: 5px;
+    }
+  }
+}

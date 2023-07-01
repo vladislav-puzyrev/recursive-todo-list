@@ -1,0 +1,10 @@
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .title {
+    font-size: 20px;
+    font-weight: bold;
+  }
+}

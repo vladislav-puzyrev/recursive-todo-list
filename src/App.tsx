@@ -1,18 +1,10 @@
-import React, { useEffect } from 'react'
-import { observer } from 'mobx-react-lite'
-import tasks from './stores/tasks/index'
+import React, { type ReactElement } from 'react'
+import HomePage from './pages/HomePage'
 
-const App = observer(() => {
-  useEffect(() => {
-    tasks.removeSelected()
-  }, [])
-
+const App = (): ReactElement => {
   return (
-    <div>
-      <p>App</p>
-      <span>{tasks.items.length}</span>
-    </div>
+    <HomePage/>
   )
-})
+}
 
 export default App
