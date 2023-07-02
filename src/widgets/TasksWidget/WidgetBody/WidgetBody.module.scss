@@ -1,9 +1,12 @@
 .body {
   display: flex;
-  gap: 20px;
 
   .left, .right {
     padding: 20px;
+  }
+
+  .left {
+    min-width: 300px;
   }
 
   .right {

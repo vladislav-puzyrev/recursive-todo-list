@@ -1,17 +1,18 @@
 import { makeAutoObservable } from 'mobx'
 import { clearPersistedStore, makePersistable } from 'mobx-persist-store'
 import { type Task } from './types/Task'
-import initialTasks from './initialTasks'
+import tasks from './tasks'
 
 class TasksStore {
-  public items: Task[] = initialTasks
-  public shownTask = initialTasks[0]
+  public items: Task[] = tasks
+  public activeTask: Task | null = tasks[0]
+  public newTaskParent: Task[] | null = null
 
   public constructor () {
     makeAutoObservable(this)
     void makePersistable(this, {
       name: 'tasks',
-      properties: ['items', 'shownTask'],
+      properties: ['items', 'activeTask', 'newTaskParent'],
       storage: window.localStorage
     })
   }
@@ -20,7 +21,7 @@ class TasksStore {
   private recursiveSetTaskField<
     F extends keyof Task,
     V extends Task[F]
-  > (taskId: string, field: F, value: V): void {
+  > (taskId: string, field: F, value: V, onlyParents?: boolean): void {
     const recursiveSearch = (tasks: Task[]): void => {
       tasks.every((task) => {
         if (task.id === taskId) {
@@ -28,8 +29,13 @@ class TasksStore {
 
           const recursiveUpdate = (subtasks: Task[]): void => {
             subtasks.forEach((subtask, index) => {
-              subtasks[index] = { ...subtask, [field]: value }
               recursiveUpdate(subtask.subtasks)
+
+              if (onlyParents === true && subtask.subtasks.length === 0) {
+                return
+              }
+
+              subtasks[index] = { ...subtask, [field]: value }
             })
           }
 
@@ -45,33 +51,23 @@ class TasksStore {
     recursiveSearch(this.items)
   }
 
-  public async clearMemory (): Promise<void> {
-    await clearPersistedStore(this)
-  }
-
-  public showTask (task: Task): void {
-    this.shownTask = task
-  }
-
-  public createTask (newTask: Task, parentId?: string): void {
-    if (parentId == null) {
-      this.items.push(newTask)
-      return
-    }
-
-    const recursiveCreate = (tasks: Task[]): void => {
-      tasks.every((task) => {
-        if (task.id === parentId) {
-          task.subtasks.push(newTask)
-          return false
-        }
-
-        recursiveCreate(task.subtasks)
-        return true
+  // Обновляет поле всех существующих задач
+  private recursiveSetField<
+    F extends keyof Task,
+    V extends Task[F]
+  > (field: F, value: V): void {
+    const recursiveUpdate = (tasks: Task[]): void => {
+      tasks.forEach((task, index) => {
+        tasks[index] = { ...task, [field]: value }
+        recursiveUpdate(task.subtasks)
       })
     }
 
-    recursiveCreate(this.items)
+    recursiveUpdate(this.items)
+  }
+
+  public async clearPersistedStore (): Promise<void> {
+    await clearPersistedStore(this)
   }
 
   public updateTask (taskId: string, newTask: Task): void {
@@ -93,11 +89,16 @@ class TasksStore {
   public removeSelected (): void {
     const recursiveRemove = (tasks: Task[]): Task[] => {
       return tasks.filter((task) => {
+        task.subtasks = recursiveRemove(task.subtasks)
+
         if (task.selected) {
+          if (this.activeTask?.id === task.id) {
+            this.activeTask = null
+          }
+
           return false
         }
 
-        task.subtasks = recursiveRemove(task.subtasks)
         return true
       })
     }
@@ -105,12 +106,32 @@ class TasksStore {
     this.items = recursiveRemove(this.items)
   }
 
+  public setAllTasksSelected (selected: boolean): void {
+    this.recursiveSetField('selected', selected)
+  }
+
+  public setAllTasksCollapsed (collapsed: boolean): void {
+    this.recursiveSetField('collapsed', collapsed)
+  }
+
   public setTaskSelected (taskId: string, selected: boolean): void {
     this.recursiveSetTaskField(taskId, 'selected', selected)
   }
 
   public setTaskCollapsed (taskId: string, collapsed: boolean): void {
-    this.recursiveSetTaskField(taskId, 'collapsed', collapsed)
+    this.recursiveSetTaskField(taskId, 'collapsed', collapsed, true)
+  }
+
+  public setActiveTask (task: Task): void {
+    this.activeTask = task
+  }
+
+  public setNewTaskParent (tasks: Task[] | null): void {
+    this.newTaskParent = tasks
+  }
+
+  public createTask (task: Task): void {
+    this.newTaskParent?.push(task)
   }
 }
 

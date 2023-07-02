@@ -5,61 +5,63 @@ import tasksStore, { type Task } from '../../../../stores/tasksStore'
 import classes from './TasksList.module.scss'
 
 const TasksList = observer(() => {
-  const renderList = (tasks: Task[]): ReactElement | null => {
+  const renderList = (tasks: Task[]): ReactElement => {
+    const handleNewTask = (): void => {
+      tasksStore.setNewTaskParent(tasks)
+    }
+
     if (tasks.length === 0) {
-      return null
+      return <button className={classes.newTask} onClick={handleNewTask}>Создать вложенную</button>
     }
 
     return (
-      <ul className={classes.list}>
-        {tasks.map((task) => {
-          const selectButtonClasses = classNames({
-            [classes.selectButton]: true,
-            [classes.selectButtonActive]: task.id === tasksStore.shownTask.id
-          })
+      <div className={classes.tasks}>
+        <ul className={classes.list}>
+          {tasks.map((task) => {
+            const titleClasses = classNames({
+              [classes.title]: true,
+              [classes.titleActive]: task.id === tasksStore.activeTask?.id
+            })
 
-          const handleCheckboxChange = (): void => {
-            tasksStore.setTaskSelected(task.id, !task.selected)
-          }
+            const handleSelect = (): void => {
+              tasksStore.setTaskSelected(task.id, !task.selected)
+            }
 
-          const handleCollapse = (): void => {
-            tasksStore.setTaskCollapsed(task.id, !task.collapsed)
-          }
+            const handleCollapse = (): void => {
+              tasksStore.setTaskCollapsed(task.id, !task.collapsed)
+            }
 
-          const handleSelect = (): void => {
-            tasksStore.showTask(task)
-          }
+            const handleActive = (): void => {
+              tasksStore.setActiveTask(task)
+            }
 
-          return (
-            <li className={classes.listItem} key={task.id}>
-              <div className={classes.listItemInfo}>
-                <button className={classes.collapseButton} onClick={handleCollapse}>
-                  <span>{task.collapsed ? '⇒' : '⇓'}</span>
-                  <span className={classes.counter}>({task.subtasks.length})</span>
-                </button>
-                <button className={selectButtonClasses} onClick={handleSelect}>{task.title}</button>
-                <input
-                  className={classes.checkbox}
-                  type="checkbox"
-                  checked={task.selected}
-                  onChange={handleCheckboxChange}
-                />
-              </div>
-              {task.collapsed ? null : renderList(task.subtasks)}
-            </li>
-          )
-        })}
-      </ul>
+            return (
+              <li className={classes.listItem} key={task.id}>
+                <div className={classes.listItemInfo}>
+                  <button className={classes.collapse} onClick={handleCollapse}>
+                    <span>{task.collapsed ? '⇒' : '⇓'}</span>
+                    <span className={classes.counter}>({task.subtasks.length})</span>
+                  </button>
+                  <button className={titleClasses} onClick={handleActive}>{task.title}</button>
+                  <input
+                    className={classes.checkbox}
+                    aria-label="Select"
+                    type="checkbox"
+                    checked={task.selected}
+                    onChange={handleSelect}
+                  />
+                </div>
+                {task.collapsed ? null : renderList(task.subtasks)}
+              </li>
+            )
+          })}
+        </ul>
+        <button className={classes.addTask} onClick={handleNewTask}>Добавить в конец</button>
+      </div>
     )
   }
 
-  return (
-    <div className={classes.container}>
-      {tasksStore.items.length > 0
-        ? renderList(tasksStore.items)
-        : <span>Задачи отсутствуют</span>}
-    </div>
-  )
+  return renderList(tasksStore.items)
 })
 
 export default TasksList
