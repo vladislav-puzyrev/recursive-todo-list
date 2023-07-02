@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/recursive-todo-list/static/css/main.8357df13.css",
+    "main.js": "/recursive-todo-list/static/js/main.2de95e88.js",
+    "index.html": "/recursive-todo-list/index.html",
+    "main.8357df13.css.map": "/recursive-todo-list/static/css/main.8357df13.css.map",
+    "main.2de95e88.js.map": "/recursive-todo-list/static/js/main.2de95e88.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.8357df13.css",
+    "static/js/main.2de95e88.js"
+  ]
+}
