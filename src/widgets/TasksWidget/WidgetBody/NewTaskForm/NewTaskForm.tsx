@@ -31,7 +31,7 @@ const NewTaskForm = (): ReactElement => {
   return (
     <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
       <input placeholder="Заголовок" {...register('title', { required: true, validate: isEmpty })} />
-      <input placeholder="Описание" {...register('description', { required: true, validate: isEmpty })} />
+      <textarea placeholder="Описание" {...register('description', { required: true, validate: isEmpty })} rows={4}/>
       <input className={classes.submit} type="submit" value="Создать"/>
       <button className={classes.cancel} onClick={handleCancel}>Отменить</button>
       {(errors.title != null) ? <span>Заголовок обязателен</span> : null}

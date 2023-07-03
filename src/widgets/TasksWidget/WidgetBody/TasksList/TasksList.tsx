@@ -45,7 +45,7 @@ const TasksList = observer(() => {
                   <button className={titleClasses} onClick={handleActive}>{task.title}</button>
                   <input
                     className={classes.checkbox}
-                    aria-label="Select"
+                    aria-label="Select task"
                     type="checkbox"
                     checked={task.selected}
                     onChange={handleSelect}

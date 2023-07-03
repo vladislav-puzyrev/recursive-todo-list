@@ -5,14 +5,14 @@ import tasks from './tasks'
 
 class TasksStore {
   public items: Task[] = tasks
-  public activeTask: Task | null = tasks[0]
+  public activeTask: Task | null = tasks[0] ?? null
   public newTaskParent: Task[] | null = null
 
   public constructor () {
     makeAutoObservable(this)
     void makePersistable(this, {
       name: 'tasks',
-      properties: ['items', 'activeTask', 'newTaskParent'],
+      properties: ['items'],
       storage: window.localStorage
     })
   }
